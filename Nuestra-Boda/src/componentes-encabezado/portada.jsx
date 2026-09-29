@@ -1216,14 +1216,14 @@ export default function Portada() {
             <h1
               className="
                 font-serif
-                text-[40px]
+                text-[36px]
                 font-normal
                 leading-[0.9]
                 tracking-[-0.035em]
                 text-[#F7F2E8]
-                sm:text-[72px]
-                md:text-[88px]
-                lg:text-[104px]
+                sm:text-[68px]
+                md:text-[84px]
+                lg:text-[100px]
               "
               style={{
                 textShadow:
@@ -1263,14 +1263,14 @@ export default function Portada() {
             <h1
               className="
                 font-serif
-                text-[40px]
+                text-[36px]
                 font-normal
                 leading-[0.9]
                 tracking-[-0.035em]
                 text-[#F7F2E8]
-                sm:text-[72px]
-                md:text-[88px]
-                lg:text-[104px]
+                sm:text-[68px]
+                md:text-[84px]
+                lg:text-[100px]
               "
               style={{
                 textShadow:
