@@ -2,18 +2,23 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 /* =========================================
-   ÁLBUM COMPARTIDO — ESTILO CLÁSICO
+   ÁLBUM COMPARTIDO — DANELY & ROGELIO
 ========================================= */
 
 const palette = {
-  ink: "#1D2733",
-  inkSoft: "#39434D",
-  paper: "#F5F1E8",
-  paperLight: "#FBF9F4",
-  paperDark: "#E5DED2",
-  antiqueGold: "#A48654",
-  antiqueGoldDark: "#725B37",
-  warmGray: "#777168",
+  ink: "#1F1F1F",
+  inkSoft: "#3D3A36",
+
+  champagne: "#D8C3A5",
+  champagneLight: "#E8DCCB",
+
+  ivory: "#F7F2E8",
+  ivoryWarm: "#EFE7DA",
+
+  gold: "#B99B73",
+  goldDark: "#927451",
+
+  warmGray: "#756E65",
 };
 
 const albumCode = "MXat19tb26";
@@ -143,7 +148,7 @@ function BotanicalBranch({ className = "" }) {
 }
 
 /* =========================================
-   SEPARADOR
+   SEPARADOR — COLOR SÓLIDO
 ========================================= */
 
 function DecorativeDivider({ compact = false }) {
@@ -152,23 +157,21 @@ function DecorativeDivider({ compact = false }) {
       <span
         className={compact ? "h-px w-8 sm:w-12" : "h-px w-10 sm:w-16"}
         style={{
-          background:
-            "linear-gradient(to right, transparent, rgba(164,134,84,0.72))",
+          backgroundColor: palette.goldDark,
         }}
       />
 
       <span
         className="h-[5px] w-[5px] rotate-45 border"
         style={{
-          borderColor: "rgba(164,134,84,0.72)",
+          borderColor: palette.goldDark,
         }}
       />
 
       <span
         className={compact ? "h-px w-8 sm:w-12" : "h-px w-10 sm:w-16"}
         style={{
-          background:
-            "linear-gradient(to left, transparent, rgba(164,134,84,0.72))",
+          backgroundColor: palette.goldDark,
         }}
       />
     </div>
@@ -276,24 +279,30 @@ const Album = () => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  /* BLOQUEAR SCROLL DEL FONDO */
+  /* =========================================
+     BLOQUEAR SCROLL CUANDO ABRE EL MODAL
+  ========================================= */
 
   useEffect(() => {
     if (!open) return undefined;
 
     const previousBodyOverflow = document.body.style.overflow;
-    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousHtmlOverflow =
+      document.documentElement.style.overflow;
 
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
 
     return () => {
       document.body.style.overflow = previousBodyOverflow;
-      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.documentElement.style.overflow =
+        previousHtmlOverflow;
     };
   }, [open]);
 
-  /* CERRAR CON ESCAPE */
+  /* =========================================
+     CERRAR CON ESCAPE
+  ========================================= */
 
   useEffect(() => {
     if (!open) return undefined;
@@ -311,7 +320,9 @@ const Album = () => {
     };
   }, [open]);
 
-  /* COPIAR CÓDIGO */
+  /* =========================================
+     COPIAR CÓDIGO
+  ========================================= */
 
   const copyAlbumCode = async () => {
     try {
@@ -356,39 +367,10 @@ const Album = () => {
           lg:py-32
         "
         style={{
-          background: `
-            linear-gradient(
-              180deg,
-              ${palette.paperLight} 0%,
-              ${palette.paper} 56%,
-              ${palette.paperDark} 100%
-            )
-          `,
+          backgroundColor: palette.champagne,
         }}
       >
-        {/* TEXTURA DE PAPEL */}
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            opacity-[0.16]
-          "
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(
-                0deg,
-                rgba(29,39,51,0.025) 0px,
-                rgba(29,39,51,0.025) 1px,
-                transparent 1px,
-                transparent 5px
-              )
-            `,
-          }}
-        />
-
-        {/* MARCOS */}
+        {/* MARCO EXTERIOR */}
 
         <div
           className="
@@ -400,9 +382,11 @@ const Album = () => {
             lg:inset-10
           "
           style={{
-            borderColor: "rgba(164,134,84,0.25)",
+            borderColor: palette.goldDark,
           }}
         />
+
+        {/* MARCO INTERIOR */}
 
         <div
           className="
@@ -414,7 +398,7 @@ const Album = () => {
             lg:inset-[46px]
           "
           style={{
-            borderColor: "rgba(164,134,84,0.1)",
+            borderColor: palette.champagneLight,
           }}
         />
 
@@ -428,7 +412,7 @@ const Album = () => {
             top-6
             h-16
             w-16
-            text-[#A48654]/25
+            text-[#927451]
             sm:left-9
             sm:top-9
             sm:h-20
@@ -445,7 +429,7 @@ const Album = () => {
             h-16
             w-16
             rotate-90
-            text-[#A48654]/25
+            text-[#927451]
             sm:right-9
             sm:top-9
             sm:h-20
@@ -462,7 +446,7 @@ const Album = () => {
             h-16
             w-16
             -rotate-90
-            text-[#A48654]/25
+            text-[#927451]
             sm:bottom-9
             sm:left-9
             sm:h-20
@@ -479,13 +463,15 @@ const Album = () => {
             h-16
             w-16
             rotate-180
-            text-[#A48654]/25
+            text-[#927451]
             sm:bottom-9
             sm:right-9
             sm:h-20
             sm:w-20
           "
         />
+
+        {/* RAMAS */}
 
         <BotanicalBranch
           className="
@@ -496,7 +482,7 @@ const Album = () => {
             h-[250px]
             w-[145px]
             -rotate-12
-            text-[#A48654]/10
+            text-[#927451]
             sm:h-[310px]
             sm:w-[180px]
             lg:left-2
@@ -512,14 +498,16 @@ const Album = () => {
             h-[250px]
             w-[145px]
             rotate-[168deg]
-            text-[#A48654]/10
+            text-[#927451]
             sm:h-[310px]
             sm:w-[180px]
             lg:right-2
           "
         />
 
-        {/* CONTENIDO */}
+        {/* =========================================
+            CONTENIDO
+        ========================================= */}
 
         <div
           className="
@@ -534,6 +522,8 @@ const Album = () => {
             text-center
           "
         >
+          {/* ICONO */}
+
           <motion.div
             className="
               flex
@@ -547,8 +537,9 @@ const Album = () => {
               sm:w-20
             "
             style={{
-              color: palette.antiqueGoldDark,
-              borderColor: "rgba(164,134,84,0.42)",
+              color: palette.goldDark,
+              borderColor: palette.goldDark,
+              backgroundColor: palette.champagneLight,
             }}
             initial={{
               opacity: 0,
@@ -566,6 +557,8 @@ const Album = () => {
             <CameraIcon />
           </motion.div>
 
+          {/* SUBTÍTULO */}
+
           <motion.p
             className="
               mt-7
@@ -576,7 +569,7 @@ const Album = () => {
               sm:tracking-[0.55em]
             "
             style={{
-              color: palette.antiqueGoldDark,
+              color: palette.goldDark,
             }}
             initial={{
               opacity: 0,
@@ -598,6 +591,8 @@ const Album = () => {
           <div className="mt-5">
             <DecorativeDivider />
           </div>
+
+          {/* TÍTULO */}
 
           <motion.h2
             className="
@@ -630,6 +625,8 @@ const Album = () => {
             Álbum compartido
           </motion.h2>
 
+          {/* TEXTO */}
+
           <motion.p
             className="
               mx-auto
@@ -643,7 +640,7 @@ const Album = () => {
               sm:leading-8
             "
             style={{
-              color: palette.warmGray,
+              color: palette.inkSoft,
             }}
             initial={{
               opacity: 0,
@@ -659,10 +656,12 @@ const Album = () => {
               delay: 0.18,
             }}
           >
-            Queremos ver nuestra celebración también a través de tus ojos.
-            Comparte las fotografías que captures y ayúdanos a conservar cada
-            momento especial.
+            Queremos ver nuestra celebración también a través de
+            tus ojos. Comparte las fotografías que captures y
+            ayúdanos a conservar cada momento especial.
           </motion.p>
+
+          {/* INFORMACIÓN */}
 
           <motion.div
             className="
@@ -674,7 +673,7 @@ const Album = () => {
               sm:px-10
             "
             style={{
-              borderColor: "rgba(164,134,84,0.3)",
+              borderColor: palette.goldDark,
             }}
             initial={{
               opacity: 0,
@@ -698,7 +697,7 @@ const Album = () => {
                 sm:text-[9px]
               "
               style={{
-                color: palette.antiqueGoldDark,
+                color: palette.goldDark,
               }}
             >
               Conservemos juntos la historia
@@ -716,10 +715,12 @@ const Album = () => {
                 color: palette.inkSoft,
               }}
             >
-              Dentro encontrarás el código y el acceso a la aplicación para
-              subir tus fotografías.
+              Dentro encontrarás el código y el acceso a la
+              aplicación para subir tus fotografías.
             </p>
           </motion.div>
+
+          {/* BOTÓN */}
 
           <motion.button
             type="button"
@@ -740,8 +741,7 @@ const Album = () => {
             style={{
               backgroundColor: palette.ink,
               borderColor: palette.ink,
-              color: palette.paperLight,
-              boxShadow: "0 12px 28px rgba(29,39,51,0.12)",
+              color: palette.ivory,
             }}
             whileHover={{
               y: -2,
@@ -785,10 +785,9 @@ const Album = () => {
               items-center
               justify-center
               overflow-hidden
-              bg-[#111820]/78
+              bg-[#1F1F1F]/90
               px-4
               py-5
-              backdrop-blur-sm
               sm:px-8
             "
             initial={{
@@ -812,6 +811,8 @@ const Album = () => {
             aria-modal="true"
             aria-labelledby="album-modal-title"
           >
+            {/* CONTENEDOR MODAL */}
+
             <motion.div
               className="
                 relative
@@ -828,9 +829,8 @@ const Album = () => {
                 md:px-14
               "
               style={{
-                backgroundColor: palette.paperLight,
-                borderColor: "rgba(164,134,84,0.48)",
-                boxShadow: "0 30px 100px rgba(0,0,0,0.34)",
+                backgroundColor: palette.ivory,
+                borderColor: palette.goldDark,
               }}
               initial={{
                 opacity: 0,
@@ -852,28 +852,6 @@ const Album = () => {
                 ease: [0.22, 1, 0.36, 1],
               }}
             >
-              {/* TEXTURA */}
-
-              <div
-                className="
-                  pointer-events-none
-                  absolute
-                  inset-0
-                  opacity-[0.14]
-                "
-                style={{
-                  backgroundImage: `
-                    repeating-linear-gradient(
-                      0deg,
-                      rgba(29,39,51,0.025) 0px,
-                      rgba(29,39,51,0.025) 1px,
-                      transparent 1px,
-                      transparent 5px
-                    )
-                  `,
-                }}
-              />
-
               {/* BORDE INTERIOR */}
 
               <div
@@ -884,11 +862,11 @@ const Album = () => {
                   border
                 "
                 style={{
-                  borderColor: "rgba(164,134,84,0.15)",
+                  borderColor: palette.champagne,
                 }}
               />
 
-              {/* CERRAR */}
+              {/* BOTÓN CERRAR */}
 
               <motion.button
                 type="button"
@@ -905,17 +883,17 @@ const Album = () => {
                   items-center
                   justify-center
                   border
-                  bg-[#FBF9F4]
                   sm:right-6
                   sm:top-6
                 "
                 style={{
                   color: palette.ink,
-                  borderColor: "rgba(164,134,84,0.42)",
+                  borderColor: palette.goldDark,
+                  backgroundColor: palette.ivory,
                 }}
                 whileHover={{
                   scale: 1.04,
-                  backgroundColor: palette.paper,
+                  backgroundColor: palette.champagneLight,
                 }}
                 whileTap={{
                   scale: 0.96,
@@ -924,7 +902,9 @@ const Album = () => {
                 <CloseIcon />
               </motion.button>
 
-              {/* CONTENIDO */}
+              {/* =========================================
+                  CONTENIDO MODAL
+              ========================================= */}
 
               <div
                 className="
@@ -936,6 +916,8 @@ const Album = () => {
                   items-center
                 "
               >
+                {/* ICONO */}
+
                 <div
                   className="
                     flex
@@ -947,8 +929,9 @@ const Album = () => {
                     border
                   "
                   style={{
-                    color: palette.antiqueGoldDark,
-                    borderColor: "rgba(164,134,84,0.42)",
+                    color: palette.goldDark,
+                    borderColor: palette.goldDark,
+                    backgroundColor: palette.champagneLight,
                   }}
                 >
                   <CameraIcon />
@@ -963,7 +946,7 @@ const Album = () => {
                     sm:text-[9px]
                   "
                   style={{
-                    color: palette.antiqueGoldDark,
+                    color: palette.goldDark,
                   }}
                 >
                   Recuerdos de nuestra boda
@@ -1005,11 +988,14 @@ const Album = () => {
                     color: palette.warmGray,
                   }}
                 >
-                  Descarga la aplicación Wedshoots, utiliza nuestro código y
-                  comparte las fotografías que captures durante la celebración.
+                  Descarga la aplicación Wedshoots, utiliza nuestro
+                  código y comparte las fotografías que captures
+                  durante la celebración.
                 </p>
 
-                {/* INFORMACIÓN */}
+                {/* =========================================
+                    INFORMACIÓN
+                ========================================= */}
 
                 <div
                   className="
@@ -1018,10 +1004,12 @@ const Album = () => {
                     w-full
                     gap-6
                     md:grid-cols-[1fr_0.8fr]
-                    md:items-center
+                    md:items-stretch
                   "
                 >
-                  {/* DATOS */}
+                  {/* =========================================
+                      DATOS DE WEDSHOOTS
+                  ========================================= */}
 
                   <div
                     className="
@@ -1029,6 +1017,7 @@ const Album = () => {
                       flex
                       flex-col
                       items-center
+                      justify-center
                       border
                       px-5
                       py-8
@@ -1036,8 +1025,8 @@ const Album = () => {
                       sm:px-7
                     "
                     style={{
-                      backgroundColor: "rgba(245,241,232,0.52)",
-                      borderColor: "rgba(164,134,84,0.28)",
+                      backgroundColor: palette.champagneLight,
+                      borderColor: palette.gold,
                     }}
                   >
                     <p
@@ -1068,6 +1057,8 @@ const Album = () => {
                       Wedshoots
                     </p>
 
+                    {/* DESCARGAR APP */}
+
                     <motion.a
                       href="https://apps.apple.com/mx/app/wedshoots/id660256196"
                       target="_blank"
@@ -1085,7 +1076,7 @@ const Album = () => {
                       style={{
                         backgroundColor: palette.ink,
                         borderColor: palette.ink,
-                        color: palette.paperLight,
+                        color: palette.ivory,
                       }}
                       whileHover={{
                         y: -2,
@@ -1109,6 +1100,8 @@ const Album = () => {
                       </span>
                     </motion.a>
 
+                    {/* DIVISOR */}
+
                     <div
                       className="
                         my-8
@@ -1116,9 +1109,11 @@ const Album = () => {
                         w-20
                       "
                       style={{
-                        backgroundColor: "rgba(164,134,84,0.38)",
+                        backgroundColor: palette.goldDark,
                       }}
                     />
+
+                    {/* CÓDIGO */}
 
                     <p
                       className="
@@ -1144,12 +1139,12 @@ const Album = () => {
                         justify-between
                         gap-3
                         border
-                        bg-[#FBF9F4]
                         px-4
                         py-4
                       "
                       style={{
-                        borderColor: "rgba(164,134,84,0.34)",
+                        backgroundColor: palette.ivory,
+                        borderColor: palette.gold,
                       }}
                     >
                       <span
@@ -1183,12 +1178,14 @@ const Album = () => {
                         "
                         style={{
                           color: copied
-                            ? palette.antiqueGoldDark
+                            ? palette.goldDark
                             : palette.ink,
-                          borderColor: "rgba(164,134,84,0.38)",
+                          borderColor: palette.gold,
+                          backgroundColor: palette.ivory,
                         }}
                         whileHover={{
-                          backgroundColor: palette.paper,
+                          backgroundColor:
+                            palette.champagneLight,
                         }}
                         whileTap={{
                           scale: 0.95,
@@ -1197,6 +1194,8 @@ const Album = () => {
                         {copied ? <CheckIcon /> : <CopyIcon />}
                       </motion.button>
                     </div>
+
+                    {/* TEXTO COPIADO */}
 
                     <AnimatePresence mode="wait">
                       <motion.p
@@ -1209,7 +1208,7 @@ const Album = () => {
                         "
                         style={{
                           color: copied
-                            ? palette.antiqueGoldDark
+                            ? palette.goldDark
                             : palette.warmGray,
                         }}
                         initial={{
@@ -1225,12 +1224,16 @@ const Album = () => {
                           y: -4,
                         }}
                       >
-                        {copied ? "Código copiado" : "Toca para copiar"}
+                        {copied
+                          ? "Código copiado"
+                          : "Toca para copiar"}
                       </motion.p>
                     </AnimatePresence>
                   </div>
 
-                  {/* QR */}
+                  {/* =========================================
+                      QR
+                  ========================================= */}
 
                   <div
                     className="
@@ -1238,13 +1241,14 @@ const Album = () => {
                       flex
                       flex-col
                       items-center
+                      justify-center
                       border
                       px-5
                       py-8
                     "
                     style={{
-                      backgroundColor: palette.paperLight,
-                      borderColor: "rgba(164,134,84,0.28)",
+                      backgroundColor: palette.ivory,
+                      borderColor: palette.gold,
                     }}
                   >
                     <p
@@ -1269,8 +1273,7 @@ const Album = () => {
                         p-3
                       "
                       style={{
-                        borderColor: "rgba(164,134,84,0.34)",
-                        boxShadow: "0 12px 30px rgba(29,39,51,0.08)",
+                        borderColor: palette.gold,
                       }}
                     >
                       <img
@@ -1300,11 +1303,13 @@ const Album = () => {
                         color: palette.warmGray,
                       }}
                     >
-                      Escanea el código QR para acceder y comenzar a compartir
-                      tus fotografías.
+                      Escanea el código QR para acceder y comenzar
+                      a compartir tus fotografías.
                     </p>
                   </div>
                 </div>
+
+                {/* CIERRE */}
 
                 <div className="mt-9">
                   <DecorativeDivider />
@@ -1315,16 +1320,17 @@ const Album = () => {
                     mt-6
                     max-w-lg
                     font-serif
-                    text-[14px]
+                    text-[13px]
                     italic
-                    leading-7
+                    leading-6
+                    sm:text-[14px]
                   "
                   style={{
-                    color: palette.inkSoft,
+                    color: palette.warmGray,
                   }}
                 >
-                  Cada fotografía será una parte especial de los recuerdos que
-                  conservaremos de este día.
+                  Gracias por ayudarnos a guardar cada instante
+                  de este día tan especial.
                 </p>
               </div>
             </motion.div>

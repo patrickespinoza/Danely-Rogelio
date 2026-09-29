@@ -1,27 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /* =========================================
-   GALERÍA EDITORIAL CLÁSICA
+   GALERÍA — DANELY & ROGELIO
 ========================================= */
 
 const palette = {
-  ink: "#1D2733",
-  inkSoft: "#39434D",
-  paper: "#F5F1E8",
-  paperLight: "#FBF9F4",
-  paperDark: "#E4DDD1",
-  antiqueGold: "#A48654",
-  antiqueGoldDark: "#725B37",
-  warmGray: "#777168",
+  ink: "#1F1F1F",
+  inkSoft: "#3D3A36",
+
+  champagne: "#D8C3A5",
+  champagneLight: "#E8DCCB",
+  champagneDark: "#CBB18D",
+
+  ivory: "#F7F2E8",
+  ivoryLight: "#FBF8F2",
+
+  gold: "#B99B73",
+  goldDark: "#927451",
+  warmGray: "#756E65",
 };
 
+/* =========================================
+   IMÁGENES
+========================================= */
+
 const images = [
-  "/carrusel01.jpeg",
-  "/carusel02.jpeg",
-  "/carusel03.jpeg",
-  "/carusel04.jpeg",
-  "/carusel05.jpeg",
+  "/Carrusel01v.jpeg",
+  "/Carrusel02.jpeg",
+  "/Carrusel03.jpeg",
+];
+
+
+const imagePositions = [
+  "center 50%", // Carrusel01v.jpeg
+  "center 20%", // Carrusel02.jpeg
+  "center 20%", // Carrusel03.jpeg
 ];
 
 const fadeUp = {
@@ -29,9 +44,11 @@ const fadeUp = {
     opacity: 0,
     y: 28,
   },
+
   show: {
     opacity: 1,
     y: 0,
+
     transition: {
       duration: 0.95,
       ease: [0.22, 1, 0.36, 1],
@@ -159,14 +176,14 @@ function DecorativeDivider() {
         className="h-px w-10 sm:w-16"
         style={{
           background:
-            "linear-gradient(to right, transparent, rgba(164,134,84,0.72))",
+            "linear-gradient(to right, transparent, rgba(146,116,81,0.8))",
         }}
       />
 
       <span
         className="h-[5px] w-[5px] rotate-45 border"
         style={{
-          borderColor: "rgba(164,134,84,0.72)",
+          borderColor: "rgba(146,116,81,0.8)",
         }}
       />
 
@@ -174,48 +191,10 @@ function DecorativeDivider() {
         className="h-px w-10 sm:w-16"
         style={{
           background:
-            "linear-gradient(to left, transparent, rgba(164,134,84,0.72))",
+            "linear-gradient(to left, transparent, rgba(146,116,81,0.8))",
         }}
       />
     </div>
-  );
-}
-
-/* =========================================
-   ICONOS
-========================================= */
-
-function PreviousIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.35"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="h-5 w-5"
-    >
-      <path d="m15 18-6-6 6-6" />
-    </svg>
-  );
-}
-
-function NextIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.35"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="h-5 w-5"
-    >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
   );
 }
 
@@ -227,11 +206,65 @@ export default function Galeria() {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   const totalImages = images.length;
 
+  /* =========================================
+     PRECARGA DE TODAS LAS IMÁGENES
+  ========================================= */
+
   useEffect(() => {
-    if (isPaused) return undefined;
+    let cancelled = false;
+
+    const preloadImages = async () => {
+      try {
+        await Promise.all(
+          images.map(
+            (src) =>
+              new Promise((resolve) => {
+                const img = new Image();
+
+                img.src = src;
+
+                if (img.complete) {
+                  resolve();
+                  return;
+                }
+
+                img.onload = resolve;
+                img.onerror = resolve;
+              })
+          )
+        );
+
+        if (!cancelled) {
+          setImagesLoaded(true);
+        }
+      } catch (error) {
+        console.error("Error precargando la galería:", error);
+
+        if (!cancelled) {
+          setImagesLoaded(true);
+        }
+      }
+    };
+
+    preloadImages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  /* =========================================
+     CAMBIO AUTOMÁTICO CADA 4.5 SEGUNDOS
+  ========================================= */
+
+  useEffect(() => {
+    if (!imagesLoaded || isPaused) {
+      return undefined;
+    }
 
     const intervalId = window.setInterval(() => {
       setDirection(1);
@@ -241,10 +274,18 @@ export default function Galeria() {
       });
     }, 4500);
 
-    return () => window.clearInterval(intervalId);
-  }, [isPaused, totalImages]);
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [imagesLoaded, isPaused, totalImages]);
+
+  /* =========================================
+     SIGUIENTE
+  ========================================= */
 
   const nextImage = () => {
+    if (!imagesLoaded) return;
+
     setDirection(1);
 
     setIndex((previousIndex) => {
@@ -252,7 +293,13 @@ export default function Galeria() {
     });
   };
 
+  /* =========================================
+     ANTERIOR
+  ========================================= */
+
   const previousImage = () => {
+    if (!imagesLoaded) return;
+
     setDirection(-1);
 
     setIndex((previousIndex) => {
@@ -262,7 +309,13 @@ export default function Galeria() {
     });
   };
 
+  /* =========================================
+     IR A UNA FOTO
+  ========================================= */
+
   const goToImage = (imageIndex) => {
+    if (!imagesLoaded || imageIndex === index) return;
+
     setDirection(imageIndex > index ? 1 : -1);
     setIndex(imageIndex);
   };
@@ -291,28 +344,30 @@ export default function Galeria() {
         background: `
           linear-gradient(
             180deg,
-            ${palette.paperLight} 0%,
-            ${palette.paper} 55%,
-            ${palette.paperDark} 100%
+            ${palette.champagneLight} 0%,
+            ${palette.champagne} 52%,
+            ${palette.champagneDark} 100%
           )
         `,
       }}
     >
-      {/* TEXTURA DE PAPEL */}
+      {/* =========================================
+          TEXTURA
+      ========================================= */}
 
       <div
         className="
           pointer-events-none
           absolute
           inset-0
-          opacity-[0.16]
+          opacity-[0.13]
         "
         style={{
           backgroundImage: `
             repeating-linear-gradient(
               0deg,
-              rgba(29,39,51,0.025) 0px,
-              rgba(29,39,51,0.025) 1px,
+              rgba(80,60,40,0.035) 0px,
+              rgba(80,60,40,0.035) 1px,
               transparent 1px,
               transparent 5px
             )
@@ -320,7 +375,32 @@ export default function Galeria() {
         }}
       />
 
-      {/* MARCO GENERAL */}
+      {/* =========================================
+          LUZ CENTRAL
+      ========================================= */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-1/2
+          h-[75%]
+          w-[85%]
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          blur-3xl
+        "
+        style={{
+          background:
+            "radial-gradient(circle, rgba(247,242,232,0.34), transparent 68%)",
+        }}
+      />
+
+      {/* =========================================
+          MARCOS
+      ========================================= */}
 
       <div
         className="
@@ -332,7 +412,7 @@ export default function Galeria() {
           lg:inset-10
         "
         style={{
-          borderColor: "rgba(164,134,84,0.25)",
+          borderColor: "rgba(146,116,81,0.30)",
         }}
       />
 
@@ -346,11 +426,13 @@ export default function Galeria() {
           lg:inset-[46px]
         "
         style={{
-          borderColor: "rgba(164,134,84,0.1)",
+          borderColor: "rgba(247,242,232,0.28)",
         }}
       />
 
-      {/* ORNAMENTOS */}
+      {/* =========================================
+          ORNAMENTOS
+      ========================================= */}
 
       <CornerOrnament
         className="
@@ -360,7 +442,7 @@ export default function Galeria() {
           top-6
           h-16
           w-16
-          text-[#A48654]/25
+          text-[#927451]/30
           sm:left-9
           sm:top-9
           sm:h-20
@@ -377,7 +459,7 @@ export default function Galeria() {
           h-16
           w-16
           rotate-90
-          text-[#A48654]/25
+          text-[#927451]/30
           sm:right-9
           sm:top-9
           sm:h-20
@@ -394,7 +476,7 @@ export default function Galeria() {
           h-16
           w-16
           -rotate-90
-          text-[#A48654]/25
+          text-[#927451]/30
           sm:bottom-9
           sm:left-9
           sm:h-20
@@ -411,13 +493,17 @@ export default function Galeria() {
           h-16
           w-16
           rotate-180
-          text-[#A48654]/25
+          text-[#927451]/30
           sm:bottom-9
           sm:right-9
           sm:h-20
           sm:w-20
         "
       />
+
+      {/* =========================================
+          BOTÁNICOS
+      ========================================= */}
 
       <BotanicalBranch
         className="
@@ -428,7 +514,7 @@ export default function Galeria() {
           h-[250px]
           w-[145px]
           -rotate-12
-          text-[#A48654]/10
+          text-[#927451]/12
           sm:h-[310px]
           sm:w-[180px]
           lg:left-2
@@ -444,28 +530,24 @@ export default function Galeria() {
           h-[250px]
           w-[145px]
           rotate-[168deg]
-          text-[#A48654]/10
+          text-[#927451]/12
           sm:h-[310px]
           sm:w-[180px]
           lg:right-2
         "
       />
 
-      <div
-        className="
-          relative
-          z-10
-          mx-auto
-          w-full
-          max-w-7xl
-        "
-      >
+      {/* =========================================
+          CONTENIDO
+      ========================================= */}
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl">
         {/* ENCABEZADO */}
 
         <motion.div
           className="
             mx-auto
-            mb-14
+            mb-12
             flex
             max-w-3xl
             flex-col
@@ -482,7 +564,9 @@ export default function Galeria() {
             opacity: 1,
             y: 0,
           }}
-          viewport={{ once: true }}
+          viewport={{
+            once: true,
+          }}
           transition={{
             duration: 0.9,
             ease: [0.22, 1, 0.36, 1],
@@ -497,7 +581,7 @@ export default function Galeria() {
               sm:tracking-[0.55em]
             "
             style={{
-              color: palette.antiqueGoldDark,
+              color: palette.goldDark,
             }}
           >
             Nuestros momentos
@@ -537,7 +621,7 @@ export default function Galeria() {
               sm:text-base
             "
             style={{
-              color: palette.warmGray,
+              color: palette.inkSoft,
             }}
           >
             Un recorrido por los instantes que han dado forma a nuestra
@@ -545,7 +629,9 @@ export default function Galeria() {
           </p>
         </motion.div>
 
-        {/* ÁLBUM PRINCIPAL */}
+        {/* =========================================
+            CARRUSEL
+        ========================================= */}
 
         <motion.div
           className="
@@ -574,7 +660,7 @@ export default function Galeria() {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* MARCO DE PAPEL */}
+          {/* MARCO DEL CARRUSEL */}
 
           <div
             className="
@@ -585,13 +671,11 @@ export default function Galeria() {
               lg:p-7
             "
             style={{
-              backgroundColor: palette.paperLight,
-              borderColor: "rgba(164,134,84,0.34)",
-              boxShadow: "0 24px 65px rgba(29,39,51,0.1)",
+              backgroundColor: palette.ivoryLight,
+              borderColor: "rgba(146,116,81,0.36)",
+              boxShadow: "0 24px 65px rgba(31,31,31,0.12)",
             }}
           >
-            {/* BORDE INTERIOR */}
-
             <div
               className="
                 pointer-events-none
@@ -600,41 +684,80 @@ export default function Galeria() {
                 border
               "
               style={{
-                borderColor: "rgba(164,134,84,0.12)",
+                borderColor: "rgba(185,155,115,0.16)",
               }}
             />
 
-            {/* FOTOGRAFÍA */}
+            {/* =========================================
+                CONTENEDOR DE LA FOTO
+            ========================================= */}
 
             <div
               className="
                 relative
-                h-[390px]
+                h-[590px]
                 overflow-hidden
-                bg-[#E4DDD1]
-                sm:h-[540px]
-                md:h-[620px]
-                lg:h-[680px]
+                sm:h-[740px]
+                md:h-[820px]
+                lg:h-[880px]
               "
+              style={{
+                backgroundColor: palette.champagne,
+              }}
             >
-              <AnimatePresence custom={direction} mode="wait">
+              {/* =========================================
+                  IMAGEN BASE
+
+                  Siempre queda una imagen debajo para
+                  evitar espacios blancos al cambiar.
+              ========================================= */}
+
+              <img
+                src={images[index]}
+                alt=""
+                aria-hidden="true"
+                draggable="false"
+                className="
+                  absolute
+                  inset-0
+                  h-full
+                  w-full
+                  object-cover
+                "
+                style={{
+                  objectPosition: imagePositions[index],
+                }}
+              />
+
+              {/* =========================================
+                  IMAGEN ANIMADA
+              ========================================= */}
+
+              <AnimatePresence
+                initial={false}
+                custom={direction}
+              >
                 <motion.img
-                  key={images[index]}
+                  key={`${images[index]}-${index}`}
                   custom={direction}
                   src={images[index]}
                   alt={`Momento ${index + 1} de ${totalImages}`}
+                  draggable="false"
                   className="
                     absolute
                     inset-0
+                    z-10
                     h-full
                     w-full
                     object-cover
-                    object-center
                   "
+                  style={{
+                    objectPosition: imagePositions[index],
+                  }}
                   initial={{
                     opacity: 0,
-                    scale: 1.025,
-                    x: direction > 0 ? 18 : -18,
+                    scale: 1.018,
+                    x: direction > 0 ? 14 : -14,
                   }}
                   animate={{
                     opacity: 1,
@@ -643,61 +766,65 @@ export default function Galeria() {
                   }}
                   exit={{
                     opacity: 0,
-                    scale: 1.012,
-                    x: direction > 0 ? -16 : 16,
+                    scale: 1.008,
+                    x: direction > 0 ? -10 : 10,
                   }}
                   transition={{
                     opacity: {
-                      duration: 0.65,
+                      duration: 0.55,
                     },
+
                     scale: {
-                      duration: 1.2,
+                      duration: 0.9,
                       ease: [0.22, 1, 0.36, 1],
                     },
+
                     x: {
-                      duration: 0.8,
+                      duration: 0.7,
                       ease: [0.22, 1, 0.36, 1],
                     },
                   }}
                 />
               </AnimatePresence>
 
-              {/* OVERLAY MUY DISCRETO */}
+              {/* OVERLAY */}
 
               <div
                 className="
                   pointer-events-none
                   absolute
                   inset-0
+                  z-20
                 "
                 style={{
                   background: `
                     linear-gradient(
                       180deg,
-                      transparent 55%,
-                      rgba(20,27,34,0.22) 100%
+                      transparent 62%,
+                      rgba(20,20,20,0.20) 100%
                     )
                   `,
                 }}
               />
 
-              {/* NUMERACIÓN */}
+              {/* NÚMERO DE FOTO */}
 
               <div
                 className="
                   absolute
                   bottom-4
                   left-4
-                  z-20
+                  z-30
                   border
-                  bg-[#FBF9F4]/90
+                  bg-[#FBF8F2]/90
                   px-4
                   py-2
+                  backdrop-blur-sm
                   sm:bottom-6
                   sm:left-6
                 "
                 style={{
-                  borderColor: "rgba(164,134,84,0.34)",
+                  borderColor: "rgba(185,155,115,0.38)",
                 }}
               >
                 <p
@@ -714,89 +841,12 @@ export default function Galeria() {
                   Fotografía {String(index + 1).padStart(2, "0")}
                 </p>
               </div>
-
-              {/* BOTÓN ANTERIOR */}
-
-              <motion.button
-                type="button"
-                onClick={previousImage}
-                aria-label="Mostrar fotografía anterior"
-                className="
-                  absolute
-                  left-3
-                  top-1/2
-                  z-30
-                  flex
-                  h-11
-                  w-11
-                  -translate-y-1/2
-                  items-center
-                  justify-center
-                  border
-                  bg-[#FBF9F4]/92
-                  sm:left-5
-                  sm:h-12
-                  sm:w-12
-                "
-                style={{
-                  borderColor: "rgba(164,134,84,0.4)",
-                  color: palette.ink,
-                  boxShadow: "0 8px 20px rgba(29,39,51,0.08)",
-                }}
-                whileHover={{
-                  y: "-50%",
-                  scale: 1.04,
-                  backgroundColor: palette.paperLight,
-                }}
-                whileTap={{
-                  scale: 0.97,
-                }}
-              >
-                <PreviousIcon />
-              </motion.button>
-
-              {/* BOTÓN SIGUIENTE */}
-
-              <motion.button
-                type="button"
-                onClick={nextImage}
-                aria-label="Mostrar siguiente fotografía"
-                className="
-                  absolute
-                  right-3
-                  top-1/2
-                  z-30
-                  flex
-                  h-11
-                  w-11
-                  -translate-y-1/2
-                  items-center
-                  justify-center
-                  border
-                  bg-[#FBF9F4]/92
-                  sm:right-5
-                  sm:h-12
-                  sm:w-12
-                "
-                style={{
-                  borderColor: "rgba(164,134,84,0.4)",
-                  color: palette.ink,
-                  boxShadow: "0 8px 20px rgba(29,39,51,0.08)",
-                }}
-                whileHover={{
-                  y: "-50%",
-                  scale: 1.04,
-                  backgroundColor: palette.paperLight,
-                }}
-                whileTap={{
-                  scale: 0.97,
-                }}
-              >
-                <NextIcon />
-              </motion.button>
             </div>
 
-            {/* PIE DE FOTO */}
+            {/* =========================================
+                CONTROLES
+                FUERA Y DEBAJO DE LA FOTO
+            ========================================= */}
 
             <div
               className="
@@ -804,67 +854,177 @@ export default function Galeria() {
                 flex
                 flex-col
                 items-center
-                px-4
-                pb-3
+                px-3
+                pb-4
                 pt-7
-                text-center
                 sm:px-8
-                sm:pb-5
+                sm:pb-6
                 sm:pt-9
               "
             >
-              <motion.p
-                key={`counter-${index}`}
-                className="
-                  font-serif
-                  text-[22px]
-                  sm:text-[26px]
-                "
-                style={{
-                  color: palette.ink,
-                }}
-                initial={{
-                  opacity: 0,
-                  y: 6,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                transition={{
-                  duration: 0.4,
-                }}
-              >
-                {String(index + 1).padStart(2, "0")}
-                <span
-                  className="
-                    mx-2
-                    text-sm
-                  "
-                  style={{
-                    color: palette.warmGray,
-                  }}
-                >
-                  /
-                </span>
-                <span
-                  className="
-                    text-base
-                    sm:text-lg
-                  "
-                  style={{
-                    color: palette.warmGray,
-                  }}
-                >
-                  {String(totalImages).padStart(2, "0")}
-                </span>
-              </motion.p>
-
-              {/* INDICADORES */}
+              {/* FLECHAS + CONTADOR */}
 
               <div
                 className="
-                  mt-5
+                  flex
+                  items-center
+                  justify-center
+                  gap-5
+                "
+              >
+                {/* ANTERIOR */}
+
+                <motion.button
+                  type="button"
+                  onClick={previousImage}
+                  disabled={!imagesLoaded}
+                  aria-label="Mostrar fotografía anterior"
+                  className="
+                    flex
+                    h-12
+                    w-12
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    disabled:cursor-wait
+                    disabled:opacity-40
+                    sm:h-14
+                    sm:w-14
+                  "
+                  style={{
+                    borderColor: "rgba(146,116,81,0.48)",
+                    backgroundColor: palette.ivoryLight,
+                    color: palette.ink,
+                    boxShadow:
+                      "0 8px 20px rgba(31,31,31,0.08)",
+                  }}
+                  whileHover={
+                    imagesLoaded
+                      ? {
+                          y: -2,
+                          scale: 1.04,
+                        }
+                      : {}
+                  }
+                  whileTap={
+                    imagesLoaded
+                      ? {
+                          scale: 0.96,
+                        }
+                      : {}
+                  }
+                >
+                  <ChevronLeft
+                    className="h-5 w-5"
+                    strokeWidth={1.4}
+                  />
+                </motion.button>
+
+                {/* CONTADOR */}
+
+                <motion.p
+                  key={`counter-${index}`}
+                  className="
+                    min-w-[80px]
+                    text-center
+                    font-serif
+                    text-[22px]
+                    sm:text-[26px]
+                  "
+                  style={{
+                    color: palette.ink,
+                  }}
+                  initial={{
+                    opacity: 0,
+                    y: 5,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: 0.35,
+                  }}
+                >
+                  {String(index + 1).padStart(2, "0")}
+
+                  <span
+                    className="mx-2 text-sm"
+                    style={{
+                      color: palette.warmGray,
+                    }}
+                  >
+                    /
+                  </span>
+
+                  <span
+                    className="text-base sm:text-lg"
+                    style={{
+                      color: palette.warmGray,
+                    }}
+                  >
+                    {String(totalImages).padStart(2, "0")}
+                  </span>
+                </motion.p>
+
+                {/* SIGUIENTE */}
+
+                <motion.button
+                  type="button"
+                  onClick={nextImage}
+                  disabled={!imagesLoaded}
+                  aria-label="Mostrar siguiente fotografía"
+                  className="
+                    flex
+                    h-12
+                    w-12
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    disabled:cursor-wait
+                    disabled:opacity-40
+                    sm:h-14
+                    sm:w-14
+                  "
+                  style={{
+                    borderColor: "rgba(146,116,81,0.48)",
+                    backgroundColor: palette.ivoryLight,
+                    color: palette.ink,
+                    boxShadow:
+                      "0 8px 20px rgba(31,31,31,0.08)",
+                  }}
+                  whileHover={
+                    imagesLoaded
+                      ? {
+                          y: -2,
+                          scale: 1.04,
+                        }
+                      : {}
+                  }
+                  whileTap={
+                    imagesLoaded
+                      ? {
+                          scale: 0.96,
+                        }
+                      : {}
+                  }
+                >
+                  <ChevronRight
+                    className="h-5 w-5"
+                    strokeWidth={1.4}
+                  />
+                </motion.button>
+              </div>
+
+              {/* =========================================
+                  INDICADORES
+              ========================================= */}
+
+              <div
+                className="
+                  mt-6
                   flex
                   items-center
                   justify-center
@@ -879,11 +1039,17 @@ export default function Galeria() {
                       key={`indicator-${imageIndex}`}
                       type="button"
                       onClick={() => goToImage(imageIndex)}
-                      aria-label={`Mostrar fotografía ${imageIndex + 1}`}
-                      aria-current={isActive ? "true" : undefined}
+                      disabled={!imagesLoaded}
+                      aria-label={`Mostrar fotografía ${
+                        imageIndex + 1
+                      }`}
+                      aria-current={
+                        isActive ? "true" : undefined
+                      }
                       className="
                         h-[7px]
                         border
+                        disabled:cursor-wait
                       "
                       animate={{
                         width: isActive ? 32 : 7,
@@ -896,14 +1062,17 @@ export default function Galeria() {
                         backgroundColor: isActive
                           ? palette.ink
                           : "transparent",
+
                         borderColor: isActive
                           ? palette.ink
-                          : "rgba(164,134,84,0.45)",
+                          : "rgba(146,116,81,0.5)",
                       }}
                     />
                   );
                 })}
               </div>
+
+              {/* TEXTO */}
 
               <p
                 className="
@@ -917,13 +1086,17 @@ export default function Galeria() {
                   color: palette.warmGray,
                 }}
               >
-                La galería avanza automáticamente
+                {imagesLoaded
+                  ? "La galería avanza automáticamente"
+                  : "Preparando fotografías"}
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* CIERRE NARRATIVO */}
+        {/* =========================================
+            CIERRE
+        ========================================= */}
 
         <motion.div
           className="
@@ -941,7 +1114,9 @@ export default function Galeria() {
             opacity: 1,
             y: 0,
           }}
-          viewport={{ once: true }}
+          viewport={{
+            once: true,
+          }}
           transition={{
             duration: 0.9,
             delay: 0.35,
@@ -955,7 +1130,8 @@ export default function Galeria() {
               w-16
             "
             style={{
-              backgroundColor: "rgba(164,134,84,0.48)",
+              backgroundColor:
+                "rgba(146,116,81,0.52)",
             }}
           />
 
@@ -968,7 +1144,7 @@ export default function Galeria() {
               sm:text-base
             "
             style={{
-              color: palette.warmGray,
+              color: palette.inkSoft,
             }}
           >
             Cada fotografía guarda un instante de nuestro camino y una parte
