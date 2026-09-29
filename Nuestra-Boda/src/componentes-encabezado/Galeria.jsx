@@ -34,7 +34,7 @@ const images = [
 
 
 const imagePositions = [
-  "30% 50%", // Carrusel01v.jpeg
+  "60% 50%", // Carrusel01v.jpeg
   "center 20%", // Carrusel02.jpeg
   "center 20%", // Carrusel03.jpeg
 ];
