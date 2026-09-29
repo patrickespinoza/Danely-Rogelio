@@ -1233,7 +1233,7 @@ export default function Portada() {
               Danely
             </h1>
 
-            <div className="my-2 flex items-center gap-3 sm:my-4 sm:gap-6">
+            <div className="my-1 flex items-center gap-3 sm:my-1 sm:gap-2">
               <span
                 className="h-px w-12 sm:w-20"
                 style={{
